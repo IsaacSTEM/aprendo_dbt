@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: odoo
+    database: SNOWFLAKE_LEARNING_DB
+    schema: BRONZE
+    tables:
+      - name: raw_orders
+      - name: raw_pyments
+      - name: raw_web_events
