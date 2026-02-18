@@ -20,3 +20,9 @@ select
   max(email_hash) as email_hash
 from src
 group by customer_id
+
+union all
+
+select
+  'UNKNOWN_USER' as customer_id,
+  'unknown_email' as email_hash

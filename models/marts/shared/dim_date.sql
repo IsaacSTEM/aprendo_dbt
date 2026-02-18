@@ -35,6 +35,10 @@ filtered as (
   from date_spine
   where date_day <= (select end_date from bounds)
 
+  union all
+
+  select to_date('1970-01-01') as date_day
+
 )
 
 select
