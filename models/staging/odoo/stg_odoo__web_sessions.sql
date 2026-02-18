@@ -1,11 +1,18 @@
-with typed as (
+with e as (
   select
-    case
-      when event_id is null    then 'UNKNOWN_EVENT'
-      when trim(event_id) = '' then 'UNKNOWN_EVENT'
-                               else trim(event_id)
-    end as event_id,
+    session_id,
+    event_ts,
 
+    case
+      when user_id is null    then 'UNKNOWN_USER'
+      when trim(user_id) = '' then 'UNKNOWN_USER'
+                              else trim(user_id)
+    end as user_id
+  from {{ source('odoo', 'raw_web_events') }}
+),
+
+typed as (
+  select
     case
       when session_id is null    then 'UNKNOWN_SESSION'
       when trim(session_id) = '' then 'UNKNOWN_SESSION'
@@ -52,38 +59,14 @@ case
     else '1970-01-01 00:00:00'::timestamp_ntz
 end as event_ts,
 
-    case
-      when event_name is null    then 'unknown_event'
-      when trim(event_name) = '' then 'unknown_event'
-                                 else lower(trim(event_name))
-    end as event_name,
-
-    -- page = path de la URL (ej: /products/camiseta-roja)
-    case
-      when page_url is null                            then '/'
-      when trim(page_url) = ''                         then '/'
-      when parse_url(page_url):path::string is null    then '/'
-      when trim(parse_url(page_url):path::string) = '' then '/'
-                                                       else parse_url(page_url):path::string
-    end as page,
-
-    ingested_at::timestamp_ntz as ingested_ts
-  from {{ source('odoo', 'raw_web_events') }}
-),
-
-dedup as (
-  select *
-  from typed
-  qualify row_number() over (
-    partition by event_id
-    order by ingested_ts desc
-  ) = 1
+    user_id
+  from e
 )
 
 select
-  event_id,
   session_id,
-  event_ts,
-  event_name,
-  page
-from dedup
+  max(user_id) as user_id,        -- simple: nos quedamos con alguno
+  min(event_ts) as session_start_ts,
+  max(event_ts) as session_end_ts
+from typed
+group by session_id
