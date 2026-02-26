@@ -6,5 +6,10 @@ sources:
     schema: BRONZE
     tables:
       - name: raw_orders
+        config:
+          freshness:
+            warn_after: {count: 10, period: day}
+            error_after: {count: 15, period: day}
+          loaded_at_field: "CAST(ingested_at AS TIMESTAMP)"
       - name: raw_payments
       - name: raw_web_events

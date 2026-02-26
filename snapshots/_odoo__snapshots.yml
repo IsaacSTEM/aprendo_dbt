@@ -1,0 +1,14 @@
+snapshots:
+  - name: orders_snapshot
+    relation: ref('stg_odoo__orders')
+    config:
+      unique_key: order_id
+      strategy: check
+      check_cols: ['order_status', 'amount_total']
+
+  - name: orders_snapshot_timestmp
+    relation: ref('stg_odoo__orders')
+    config:
+      unique_key: order_id
+      strategy: timestamp
+      updated_at: ingested_ts
