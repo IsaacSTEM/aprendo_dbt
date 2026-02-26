@@ -2,8 +2,10 @@ version: 2
 
 models:
   - name: stg_odoo__customers
+    description: Tabla de clientes creada por Odoo
     columns:
       - name: customer_id
+        description: Id generado y asignado a cada cliente por Odoo
         tests: [not_null, unique]
       - name: email_hash
         tests: [not_null]
@@ -11,20 +13,25 @@ models:
   - name: stg_odoo__orders
     columns:
       - name: order_id
+        description: '{{ doc("descripcion_generica") }}'
         tests: [not_null, unique]
       - name: customer_id
+        description: '{{ doc("descripcion_generica") }}'
         tests:
           - not_null
           - relationships:
               to: ref('stg_odoo__customers')
               field: customer_id
       - name: order_status
+        description: '{{ doc("descripcion_generica") }}'
         tests:
           - accepted_values:
               values: ["confirmed", "draft", "cancelled", "failed"]
       - name: amount_total
+        description: '{{ doc("descripcion_generica") }}'
         tests: [not_null]
       - name: currency
+        description: '{{ doc("descripcion_generica") }}'
         tests: [not_null]
 
   - name: stg_odoo__payment_methods
